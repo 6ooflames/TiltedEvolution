@@ -1,0 +1,43 @@
+name: Build Fallout Together
+
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+    branches: [master, dev]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+
+      - name: Configure
+        run: xmake config -p windows -a x64 -m release -y -v
+
+      - name: Build Fallout Together
+        run: |
+          xmake build FalloutTogetherClient -y -v
+          xmake build FalloutTogetherServer -y -v
+          xmake build FalloutServerRunner -y -v
+
+      - name: Package
+        run: xmake install -o package -y
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: FalloutTogether-Windows-x64
+          path: package/
+          retention-days: 30
