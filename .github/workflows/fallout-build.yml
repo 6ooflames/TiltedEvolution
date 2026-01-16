@@ -28,9 +28,7 @@ jobs:
 
       - name: Build Fallout Together
         run: |
-          xmake build FalloutTogetherClient -v
-          xmake build FalloutTogetherServer -v
-          xmake build FalloutServerRunner -v
+          xmake build FalloutTogetherClient FalloutTogetherServer FalloutServerRunner
 
       - name: Package
         run: xmake install -o package -y
